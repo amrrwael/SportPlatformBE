@@ -102,10 +102,11 @@ namespace PlatformSport
 
                 // Register services for the sports platform
                 builder.Services.AddScoped<IUserService, UserService>();
+                builder.Services.AddScoped<ISportService, SportService>();
+                builder.Services.AddScoped<IStadiumService, StadiumService>();
 
-
-                // Build the application
-                var app = builder.Build();
+            // Build the application
+            var app = builder.Build();
 
                 // Apply database migrations and seed roles
                 using (var serviceScope = app.Services.CreateScope())
