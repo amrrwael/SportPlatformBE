@@ -1,0 +1,6 @@
+@PlatformSport_HostAddress = http://localhost:5222
+
+GET {{PlatformSport_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
