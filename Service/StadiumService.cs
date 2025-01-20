@@ -1,4 +1,4 @@
-﻿using PlatformSport.Models;
+using PlatformSport.Models;
 using PlatformSport.Models.Dto;
 using Microsoft.EntityFrameworkCore;
 using PlatformSport.Database;
