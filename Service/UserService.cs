@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using PlatformSport.Database;
 using PlatformSport.Helpers;
 using PlatformSport.Models.Dto;
 
@@ -10,6 +12,8 @@ namespace PlatformSport.Services
         Task<string> LoginAsync(string email, string password);
         Task<UserProfileDto> GetUserProfileAsync(string userId);
         Task<bool> EditUserProfileAsync(string userId, UserProfileUpdateDto dto);
+        Task<List<RoomDto>> GetRoomsCreatedByUserAsync(string userId);
+        Task<List<RoomDto>> GetRoomsJoinedByUserAsync(string userId);
     }
 
     public class UserService : IUserService
@@ -17,15 +21,20 @@ namespace PlatformSport.Services
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
         private readonly JwtTokenHelper _jwtTokenHelper;
+        private readonly ApplicationDbContext _context; // Inject the DbContext
+
 
         public UserService(
             UserManager<User> userManager,
             SignInManager<User> signInManager,
-            JwtTokenHelper jwtTokenHelper)
+            JwtTokenHelper jwtTokenHelper,
+            ApplicationDbContext context)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _jwtTokenHelper = jwtTokenHelper;
+            _context = context;
+
         }
 
         public async Task<(string token, string errorMessage)> RegisterAsync(UserRegistrationDto dto)
@@ -96,6 +105,46 @@ namespace PlatformSport.Services
 
             var result = await _userManager.UpdateAsync(user);
             return result.Succeeded;
+        }
+
+        public async Task<List<RoomDto>> GetRoomsCreatedByUserAsync(string userId)
+        {
+            var rooms = await _context.Rooms
+                .Where(r => r.HostUserId == userId)
+                .Select(r => new RoomDto
+                {
+                    Id = r.Id,
+                    Name = r.Name,
+                    Description = r.Description,
+                    MaxPlayers = r.MaxPlayers,
+                    EventStart = r.EventStart,
+                    SportId = r.SportId,
+                    HostUserId = r.HostUserId,
+                    PlayerIds = r.Players.Select(p => p.Id).ToList()
+                })
+                .ToListAsync();
+
+            return rooms;
+        }
+
+        public async Task<List<RoomDto>> GetRoomsJoinedByUserAsync(string userId)
+        {
+            var rooms = await _context.Rooms
+                .Where(r => r.Players.Any(p => p.Id == userId))
+                .Select(r => new RoomDto
+                {
+                    Id = r.Id,
+                    Name = r.Name,
+                    Description = r.Description,
+                    MaxPlayers = r.MaxPlayers,
+                    EventStart = r.EventStart,
+                    SportId = r.SportId,
+                    HostUserId = r.HostUserId,
+                    PlayerIds = r.Players.Select(p => p.Id).ToList()
+                })
+                .ToListAsync();
+
+            return rooms;
         }
     }
 }
