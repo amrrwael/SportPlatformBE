@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using PlatformSport.Configrations;
 using System.IdentityModel.Tokens.Jwt;
