@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PlatformSport.Models.Dto;
 using PlatformSport.Services;
@@ -79,6 +79,25 @@ namespace PlatformSport.Controllers
                 return NotFound(new { message = "User not found or update failed." });
 
             return Ok(new { message = "Profile updated successfully." });
+        }
+
+        // UserController.cs
+        [HttpGet("Rooms/Created")]
+        [Authorize]
+        public async Task<IActionResult> GetRoomsCreatedByUser()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var rooms = await _userService.GetRoomsCreatedByUserAsync(userId);
+            return Ok(rooms);
+        }
+
+        [HttpGet("Rooms/Joined")]
+        [Authorize]
+        public async Task<IActionResult> GetRoomsJoinedByUser()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var rooms = await _userService.GetRoomsJoinedByUserAsync(userId);
+            return Ok(rooms);
         }
     }
 }
