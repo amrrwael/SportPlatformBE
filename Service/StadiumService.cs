@@ -67,5 +67,40 @@ namespace PlatformSport.Services
 
             return stadium.Id;
         }
+        // StadiumService.cs
+        public async Task<bool> UpdateStadiumAsync(int stadiumId, StadiumDto stadiumDto)
+        {
+            var stadium = await _context.Stadiums.FindAsync(stadiumId);
+            if (stadium == null)
+            {
+                return false;
+            }
+
+            stadium.Name = stadiumDto.Name;
+            stadium.Location = stadiumDto.Location;
+            stadium.City = stadiumDto.City;
+            stadium.Description = stadiumDto.Description;
+            stadium.Price = stadiumDto.Price;
+            stadium.SportId = stadiumDto.SportId;
+
+            _context.Stadiums.Update(stadium);
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+
+        public async Task<bool> DeleteStadiumAsync(int stadiumId)
+        {
+            var stadium = await _context.Stadiums.FindAsync(stadiumId);
+            if (stadium == null)
+            {
+                return false;
+            }
+
+            _context.Stadiums.Remove(stadium);
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
     }
 }
