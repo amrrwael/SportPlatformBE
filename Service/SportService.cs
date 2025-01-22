@@ -51,5 +51,33 @@ namespace PlatformSport.Services
 
             return sport.Id;
         }
+        public async Task<bool> UpdateSportAsync(int sportId, SportDto sportDto)
+        {
+            var sport = await _context.Sports.FindAsync(sportId);
+            if (sport == null)
+            {
+                return false;
+            }
+
+            sport.Name = sportDto.Name; // Update the sport name
+            _context.Sports.Update(sport);
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+
+        public async Task<bool> DeleteSportAsync(int sportId)
+        {
+            var sport = await _context.Sports.FindAsync(sportId);
+            if (sport == null)
+            {
+                return false;
+            }
+
+            _context.Sports.Remove(sport);
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
     }
 }
