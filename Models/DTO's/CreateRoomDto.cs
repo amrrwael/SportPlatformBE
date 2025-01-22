@@ -1,3 +1,4 @@
+
 namespace PlatformSport.Models.Dto
 {
     public class CreateRoomDto
@@ -7,5 +8,7 @@ namespace PlatformSport.Models.Dto
         public int MaxPlayers { get; set; }
         public DateTime EventStart { get; set; }
         public int SportId { get; set; }
+        public int StadiumId { get; set; }  // Foreign key to Stadium
+        public CityEnum City { get; set; }  // City where the room is located
     }
 }
