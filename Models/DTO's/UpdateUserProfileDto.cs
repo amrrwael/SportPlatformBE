@@ -1,4 +1,4 @@
-﻿namespace PlatformSport.Models.Dto
+namespace PlatformSport.Models.Dto
 {
     public class UserProfileUpdateDto
     {
