@@ -40,6 +40,20 @@ namespace PlatformSport.Database
                 .WithMany()
                 .HasForeignKey(r => r.HostUserId)
                 .OnDelete(DeleteBehavior.Restrict);  // Prevent cascade delete
+            modelBuilder.Entity<Room>()
+        .HasOne(r => r.Sport)
+        .WithMany()
+        .HasForeignKey(r => r.SportId)
+        .OnDelete(DeleteBehavior.Restrict); // Prevent cascade delete
+
+            // Configure relationship between Room and Stadium
+            modelBuilder.Entity<Room>()
+                .HasOne(r => r.Stadium)
+                .WithMany()
+                .HasForeignKey(r => r.StadiumId)
+                .OnDelete(DeleteBehavior.Restrict); // Prevent cascade delete
+
+          
         }
     }
 }
