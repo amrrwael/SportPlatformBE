@@ -49,12 +49,14 @@ namespace PlatformSport.Services
             };
         }
 
+        // StadiumService.cs
         public async Task<int> CreateStadiumAsync(StadiumDto stadiumDto)
         {
             var stadium = new Stadium
             {
                 Name = stadiumDto.Name,
                 Location = stadiumDto.Location,
+                City = stadiumDto.City,  // Use the enum value
                 Description = stadiumDto.Description,
                 Price = stadiumDto.Price,
                 SportId = stadiumDto.SportId
