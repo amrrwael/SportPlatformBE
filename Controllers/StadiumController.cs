@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PlatformSport.Database;
@@ -48,6 +49,33 @@ namespace PlatformSport.Controllers
             }
 
             return Ok(stadium);
+        }
+
+        // StadiumController.cs
+        [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> UpdateStadium(int id, [FromBody] StadiumDto stadiumDto)
+        {
+            var result = await _stadiumService.UpdateStadiumAsync(id, stadiumDto);
+            if (!result)
+            {
+                return NotFound("Stadium not found.");
+            }
+
+            return Ok("Stadium updated successfully.");
+        }
+
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeleteStadium(int id)
+        {
+            var result = await _stadiumService.DeleteStadiumAsync(id);
+            if (!result)
+            {
+                return NotFound("Stadium not found.");
+            }
+
+            return Ok("Stadium deleted successfully.");
         }
 
     }
