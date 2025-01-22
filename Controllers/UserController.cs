@@ -12,13 +12,68 @@ namespace PlatformSport.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
+        private readonly IWebHostEnvironment _env; // Add this field
 
-        public UserController(IUserService userService)
+
+        public UserController(IUserService userService, IWebHostEnvironment env)
         {
             _userService = userService;
+            _env = env;
         }
 
-        [HttpPost("Register")]
+
+        [HttpPost("UploadProfilePicture")]
+        [Authorize]
+        public async Task<IActionResult> UploadProfilePicture(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+            {
+                return BadRequest("No file uploaded.");
+            }
+
+            // Validate file type (e.g., allow only images)
+            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+            var fileExtension = Path.GetExtension(file.FileName).ToLower();
+            if (!allowedExtensions.Contains(fileExtension))
+            {
+                return BadRequest("Invalid file type. Only JPG, JPEG, PNG, and GIF are allowed.");
+            }
+
+            // Generate a unique file name
+            var fileName = Guid.NewGuid().ToString() + fileExtension;
+            var filePath = Path.Combine(_env.WebRootPath, "profile-pictures", fileName);
+
+            // Ensure the directory exists
+            var directoryPath = Path.GetDirectoryName(filePath);
+            if (!Directory.Exists(directoryPath))
+            {
+                Directory.CreateDirectory(directoryPath);
+            }
+
+            // Save the file to the server
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            // Get the current user's ID
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            // Update the user's profile picture URL
+            var profilePictureUrl = $"/profile-pictures/{fileName}";
+            var result = await _userService.UpdateProfilePictureAsync(userId, profilePictureUrl);
+
+            if (!result)
+            {
+                return StatusCode(500, "Failed to update profile picture.");
+            }
+
+            return Ok(new { ProfilePictureUrl = profilePictureUrl });
+        }
+    
+
+
+    [HttpPost("Register")]
         [AllowAnonymous]
         public async Task<IActionResult> Register([FromBody] UserRegistrationDto dto)
         {
