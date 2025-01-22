@@ -8,6 +8,7 @@ using PlatformSport.Services;
 using Microsoft.OpenApi.Models;
 using System.Text;
 using PlatformSport.Database;
+using System.Text.Json.Serialization;
 
 
 namespace PlatformSport
@@ -19,6 +20,13 @@ namespace PlatformSport
         public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); // Convert enums to strings
+    });
+
 
             // Add controllers to handle API requests
             builder.Services.AddControllers();
@@ -109,6 +117,8 @@ namespace PlatformSport
             // Build the application
             var app = builder.Build();
 
+            app.UseStaticFiles();
+
             // Apply database migrations and seed roles
             using (var serviceScope = app.Services.CreateScope())
             {
@@ -155,3 +165,4 @@ namespace PlatformSport
         }
     }
 }
+
