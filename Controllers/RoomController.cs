@@ -1,6 +1,7 @@
-﻿// RoomController.cs
+// RoomController.cs
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PlatformSport.Models;
 using PlatformSport.Models.Dto;
 using PlatformSport.Services;
 using System.Security.Claims;
@@ -19,6 +20,21 @@ namespace PlatformSport.Controllers
             _roomService = roomService;
         }
 
+        [HttpGet("all")]
+        public async Task<IActionResult> GetAllRooms(
+    [FromQuery] string sortBy = null, // Optional: "price" or "players"
+    [FromQuery] string city = null,  // Optional: Filter by city
+    [FromQuery] int? stadiumId = null) // Optional: Filter by stadiumId
+        {
+            // Validate city filter
+            if (!string.IsNullOrEmpty(city) && !Enum.TryParse(city, out CityEnum _))
+            {
+                return BadRequest("Invalid city. Valid options are Tomsk and Novosibirsk.");
+            }
+
+            var rooms = await _roomService.GetAllRoomsAsync(sortBy, city, stadiumId);
+            return Ok(rooms);
+        }
         [HttpPost("Create")]
         [Authorize]
         public async Task<IActionResult> CreateRoom([FromBody] CreateRoomDto dto)
