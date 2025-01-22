@@ -14,6 +14,8 @@ namespace PlatformSport.Services
         Task<bool> EditUserProfileAsync(string userId, UserProfileUpdateDto dto);
         Task<List<RoomDto>> GetRoomsCreatedByUserAsync(string userId);
         Task<List<RoomDto>> GetRoomsJoinedByUserAsync(string userId);
+        Task<bool> UpdateProfilePictureAsync(string userId, string profilePictureUrl);
+
     }
 
     public class UserService : IUserService
@@ -35,6 +37,21 @@ namespace PlatformSport.Services
             _jwtTokenHelper = jwtTokenHelper;
             _context = context;
 
+        }
+
+
+        public async Task<bool> UpdateProfilePictureAsync(string userId, string profilePictureUrl)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return false;
+            }
+
+            user.ProfilePicture = profilePictureUrl;
+            var result = await _userManager.UpdateAsync(user);
+
+            return result.Succeeded;
         }
 
         public async Task<(string token, string errorMessage)> RegisterAsync(UserRegistrationDto dto)
@@ -79,18 +96,22 @@ namespace PlatformSport.Services
             return _jwtTokenHelper.GenerateToken(user);
         }
 
+        // UserService.cs
         public async Task<UserProfileDto> GetUserProfileAsync(string userId)
         {
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
+            {
                 return null;
+            }
 
             return new UserProfileDto
             {
                 Id = user.Id,
                 Name = user.FullName,
                 Email = user.Email,
-                PhoneNumber = user.PhoneNumber
+                PhoneNumber = user.PhoneNumber,
+                ProfilePicture = user.ProfilePicture // Add this line
             };
         }
 
