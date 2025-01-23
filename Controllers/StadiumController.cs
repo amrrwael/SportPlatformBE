@@ -1,3 +1,4 @@
+// StadiumController.cs
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,12 +14,12 @@ namespace PlatformSport.Controllers
     public class StadiumController : ControllerBase
     {
         private readonly IStadiumService _stadiumService;
-        private readonly ApplicationDbContext _context; // Inject the DbContext
+        private readonly ApplicationDbContext _context;
 
         public StadiumController(IStadiumService stadiumService, ApplicationDbContext context)
         {
             _stadiumService = stadiumService;
-            _context = context; // Assign DbContext
+            _context = context;
         }
 
         [HttpPost]
@@ -51,7 +52,13 @@ namespace PlatformSport.Controllers
             return Ok(stadium);
         }
 
-        // StadiumController.cs
+        [HttpGet("all")]
+        public async Task<IActionResult> GetAllStadiums()
+        {
+            var stadiums = await _stadiumService.GetAllStadiumsAsync();
+            return Ok(stadiums);
+        }
+
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateStadium(int id, [FromBody] StadiumDto stadiumDto)
@@ -77,6 +84,5 @@ namespace PlatformSport.Controllers
 
             return Ok("Stadium deleted successfully.");
         }
-
     }
 }
