@@ -1,4 +1,4 @@
-
+// RoomDto.cs
 namespace PlatformSport.Models.Dto
 {
     public class RoomDto
@@ -13,6 +13,7 @@ namespace PlatformSport.Models.Dto
         public int StadiumId { get; set; }
         public StadiumDto Stadium { get; set; } // Include Stadium details
         public string HostUserId { get; set; }
+        public string HostUserName { get; set; } // Add this line
         public CityEnum City { get; set; } // This will now be serialized as a string
         public List<string> PlayerIds { get; set; }
     }
