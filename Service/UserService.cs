@@ -131,6 +131,7 @@ namespace PlatformSport.Services
         public async Task<List<RoomDto>> GetRoomsCreatedByUserAsync(string userId)
         {
             var rooms = await _context.Rooms
+                .Include(r => r.HostUser) // Include HostUser to get the host's name
                 .Where(r => r.HostUserId == userId)
                 .Select(r => new RoomDto
                 {
@@ -141,6 +142,7 @@ namespace PlatformSport.Services
                     EventStart = r.EventStart,
                     SportId = r.SportId,
                     HostUserId = r.HostUserId,
+                    HostUserName = r.HostUser.FullName, // Add host's name
                     PlayerIds = r.Players.Select(p => p.Id).ToList()
                 })
                 .ToListAsync();
@@ -151,6 +153,7 @@ namespace PlatformSport.Services
         public async Task<List<RoomDto>> GetRoomsJoinedByUserAsync(string userId)
         {
             var rooms = await _context.Rooms
+                .Include(r => r.HostUser) // Include HostUser to get the host's name
                 .Where(r => r.Players.Any(p => p.Id == userId))
                 .Select(r => new RoomDto
                 {
@@ -161,6 +164,7 @@ namespace PlatformSport.Services
                     EventStart = r.EventStart,
                     SportId = r.SportId,
                     HostUserId = r.HostUserId,
+                    HostUserName = r.HostUser.FullName, // Add host's name
                     PlayerIds = r.Players.Select(p => p.Id).ToList()
                 })
                 .ToListAsync();
