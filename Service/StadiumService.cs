@@ -1,3 +1,4 @@
+// StadiumService.cs
 using PlatformSport.Models;
 using PlatformSport.Models.Dto;
 using Microsoft.EntityFrameworkCore;
@@ -31,6 +32,22 @@ namespace PlatformSport.Services
             }).ToList();
         }
 
+        public async Task<List<StadiumDto>> GetAllStadiumsAsync()
+        {
+            var stadiums = await _context.Stadiums
+                .ToListAsync();
+
+            return stadiums.Select(s => new StadiumDto
+            {
+                Id = s.Id,
+                Name = s.Name,
+                Location = s.Location,
+                Description = s.Description,
+                Price = s.Price,
+                SportId = s.SportId
+            }).ToList();
+        }
+
         public async Task<StadiumDto> GetStadiumByIdAsync(int stadiumId)
         {
             var stadium = await _context.Stadiums
@@ -49,14 +66,13 @@ namespace PlatformSport.Services
             };
         }
 
-        // StadiumService.cs
         public async Task<int> CreateStadiumAsync(StadiumDto stadiumDto)
         {
             var stadium = new Stadium
             {
                 Name = stadiumDto.Name,
                 Location = stadiumDto.Location,
-                City = stadiumDto.City,  // Use the enum value
+                City = stadiumDto.City,
                 Description = stadiumDto.Description,
                 Price = stadiumDto.Price,
                 SportId = stadiumDto.SportId
@@ -67,7 +83,7 @@ namespace PlatformSport.Services
 
             return stadium.Id;
         }
-        // StadiumService.cs
+
         public async Task<bool> UpdateStadiumAsync(int stadiumId, StadiumDto stadiumDto)
         {
             var stadium = await _context.Stadiums.FindAsync(stadiumId);
