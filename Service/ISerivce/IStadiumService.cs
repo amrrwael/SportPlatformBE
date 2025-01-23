@@ -1,12 +1,11 @@
-// IStadiumService.cs
+// ISportService.cs
 using PlatformSport.Models.Dto;
 
-public interface IStadiumService
+public interface ISportService
 {
-    Task<List<StadiumDto>> GetAllStadiumsAsync(int sportId);
-    Task<List<StadiumDto>> GetAllStadiumsAsync(); // Add this method
-    Task<StadiumDto> GetStadiumByIdAsync(int stadiumId);
-    Task<int> CreateStadiumAsync(StadiumDto stadiumDto);
-    Task<bool> UpdateStadiumAsync(int stadiumId, StadiumDto stadiumDto);
-    Task<bool> DeleteStadiumAsync(int stadiumId);
+    Task<List<SportDto>> GetAllSportsAsync();
+    Task<SportDto> GetSportByIdAsync(int sportId);
+    Task<int> CreateSportAsync(SportDto sportDto);
+    Task<bool> UpdateSportAsync(int sportId, SportDto sportDto); // Add this method
+    Task<bool> DeleteSportAsync(int sportId); // Add this method
 }
