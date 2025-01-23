@@ -24,12 +24,22 @@ namespace PlatformSport.Services
                 .Include(r => r.Players) // Include Players
                 .Include(r => r.Stadium) // Include Stadium
                 .Include(r => r.Sport)   // Include Sport
+                .Include(r => r.HostUser) // Include HostUser to get the host's name
                 .AsQueryable();
 
             // Apply city filter
             if (!string.IsNullOrEmpty(cityFilter))
             {
-                query = query.Where(r => Enum.GetName(typeof(CityEnum), r.City) == cityFilter);
+                // Parse the cityFilter string into the CityEnum
+                if (Enum.TryParse(cityFilter, out CityEnum cityEnum))
+                {
+                    query = query.Where(r => r.City == cityEnum); // Compare directly with the enum value
+                }
+                else
+                {
+                    // If the cityFilter is invalid, return an empty list or handle the error as needed
+                    return new List<RoomDto>();
+                }
             }
 
             // Apply stadium filter
@@ -78,6 +88,7 @@ namespace PlatformSport.Services
                         Price = r.Stadium.Price
                     },
                     HostUserId = r.HostUserId,
+                    HostUserName = r.HostUser.FullName, // Add host's name
                     City = r.City,
                     PlayerIds = r.Players.Select(p => p.Id).ToList()
                 })
@@ -123,6 +134,7 @@ namespace PlatformSport.Services
         {
             var room = await _context.Rooms
                 .Include(r => r.Players)
+                .Include(r => r.HostUser) // Include HostUser to get the host's name
                 .FirstOrDefaultAsync(r => r.Id == roomId);
 
             if (room == null) return null;
@@ -136,6 +148,7 @@ namespace PlatformSport.Services
                 EventStart = room.EventStart,
                 SportId = room.SportId,
                 HostUserId = room.HostUserId,
+                HostUserName = room.HostUser.FullName, // Add host's name
                 PlayerIds = room.Players.Select(p => p.Id).ToList()
             };
         }
@@ -170,6 +183,21 @@ namespace PlatformSport.Services
             if (user == null) return false;
 
             room.Players.Remove(user);
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+        public async Task<bool> DeleteRoomAsync(int roomId, string hostUserId)
+        {
+            var room = await _context.Rooms
+                .FirstOrDefaultAsync(r => r.Id == roomId && r.HostUserId == hostUserId);
+
+            if (room == null)
+            {
+                return false; // Room not found or user is not the host
+            }
+
+            _context.Rooms.Remove(room);
             await _context.SaveChangesAsync();
 
             return true;
