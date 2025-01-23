@@ -80,5 +80,20 @@ namespace PlatformSport.Controllers
 
             return Ok();
         }
+
+        [HttpDelete("{id}")]
+        [Authorize]
+        public async Task<IActionResult> DeleteRoom(int id)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); // Get the current user's ID
+            var result = await _roomService.DeleteRoomAsync(id, userId);
+
+            if (!result)
+            {
+                return BadRequest("Room not found or you are not the host.");
+            }
+
+            return Ok("Room deleted successfully.");
+        }
     }
 }
